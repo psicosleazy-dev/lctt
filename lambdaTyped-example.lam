@@ -1,0 +1,79 @@
+-- definição do ambiente
+-- variáveis iniciam com minúscula, tipos com maiúscula
+
+var 
+  x:A;
+  y:A->B;
+  z:(A->B)->A;
+end
+
+-- definições auxiliares
+
+let
+
+  -- booleanos sobre o tipo "A"
+  -- BOOL = A->A->A
+
+  true  = \a:A.\b:A.a;
+  false = \a:A.\b:A.b;
+  if = \b:(A->A->A). \e1:A. \e2:A. b e1 e2;  
+  not = \b:(A->A->A). \e1:A. \e2:A. b e2 e1;
+  and = \b1:(A->A->A). \b2:(A->A->A). \e1:A. \e2:A. b1 (b2 e1 e2) e2;
+ 
+
+  -- naturais sobre o tipo "A"
+  -- NAT = (A->A)->A->A
+
+  zero = \f:A->A. \x:A. x;
+
+  succ = \n:(A->A)->A->A. \f:A->A. \x:A. f (n f x);
+
+  add  = \n1:(A->A)->A->A.
+         \n2:(A->A)->A->A.
+           \f:A->A. \x:A. n1 f (n2 f x);
+
+  mult = \n1:(A->A)->A->A.
+         \n2:(A->A)->A->A.
+           \f:A->A. \x:A. n1 (n2 f) x;
+
+
+  iszero = \n:(A->A)->A->A. 
+             \e1:A. \e2:A. n (\x:A. e2) e1; 
+
+
+  ifzero   = \n:(A->A)->A->A.
+            \a:(A->A)->A->A.
+            \b:(A->A)->A->A.
+             \f:A->A. \x:A. n (\u:A. b f x) (a f x);          
+
+
+  -- pares de naturais
+  -- PAIRNAT = (BOOL->NAT)
+
+
+  pair = \n1:(A->A)->A->A.
+         \n2:(A->A)->A->A.
+         \b:(A->A->A).
+            \f:A->A.
+            \x:A.
+            b (n1 f x) (n2 f x);
+
+  fst = \p: (A->A->A) -> ((A->A)->A->A).
+         \f:A->A.
+         \x:A.
+         (p true) f x;
+
+
+
+  snd = \p: (A->A->A) -> ((A->A)->A->A).
+         \f:A->A.
+         \x:A.
+         (p false) f x;
+
+
+  shiftInc = \p:(A->A->A) -> ((A->A)->A->A).
+               pair (snd p) (succ (snd p));  
+            
+in
+
+  iszero                   

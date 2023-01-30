@@ -1,0 +1,42 @@
+let
+-- booleanas
+   true = \x y. x;
+   false = \x y. y;
+   if = \x y z. x y z;
+   not = \b. if b false true;
+   succ = \n. \A B. A (n A B);
+   add = \n1 n2. n1 succ n2;
+   mult = \n1 n2. n1 (add n2) 0;
+   isZero = \n. n (\x. false) true;
+   and = \p q.p q p;
+   or = \p q.p p q;
+   not = \p a b.p b a;
+-- pares
+   pair = \a b c. c a b;
+   fst = \p. p true;
+   snd = \p. p false;
+   shiftInc = \p. pair (snd p) (succ (snd p));
+-- operacoes relacionais etc
+   pred = \n. fst (n shiftInc (pair 0 0));
+   sub = \a b. b pred a;
+   abs_diff = \x y. add (sub x y) (sub y x);
+   gt = \a b. not (isZero (sub a b));
+   eq = \a b. isZero (abs_diff a b);
+   lt = \a b. gt b a;
+   D = λR.λa.λb.if (lt a b) 0 (succ (R (sub a b) b));
+   div = λa.λb.if (isZero b) 0 (Y D a b);
+-- listas
+   empty = \x. true;
+   cons = pair;
+   isEmpty = \l. l (\a b. false);
+   head = fst;
+   tail = snd;
+   Y = \f. (\x. f (x x)) (\x. f (x x));
+   F = \R n. if (isZero n) 1 (mult n (R (pred n)));
+   fact = Y F;
+-- funcoes da aula
+   f = \p. (if (gt (fst p) (snd p)) (pair (snd p) (fst p)) p);
+-- g
+   append = \n l. cons n l;
+in
+   f (pair 8 3)
