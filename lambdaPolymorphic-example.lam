@@ -1,0 +1,19 @@
+typedef
+
+Bool = forall C, C -> C -> C;
+
+Nat = forall C, (C -> C) -> C -> C;
+
+end
+
+
+let
+
+true = \\C. \a:C. \b:C. a; -- forall C, C -> C -> C
+false = \\C. \a:C. \b:C. b;
+zero = \\C. \f:C->C. \x:C. x;
+succ = \n:Nat. \\C. \f:C->C. \x:C. f ((n [C]) f x) -- [] instanciacao
+
+
+in
+succ 4

@@ -1,0 +1,84 @@
+typedef
+--nomes para os tipos
+
+Bool     = forall C, C        -> C            ->C;
+Nat      = forall C,(C->C)    ->  C            ->C;
+ListNat  = forall C, C        -> (Nat->C->C)  ->C;
+
+
+
+NatxNat  = forall C, (Nat->Nat->C)           ->C;
+NatxBool = forall C, (Nat->Bool->C)          ->C;
+
+
+
+end
+
+var
+--Variáveis do ambiente (de exec e de tipo)
+A:*;
+
+a1:A;
+a2:A;
+
+end
+
+let
+--definições
+--BOOLEANOS
+true = \\C.\a:C.\b:C. a;
+false = \\C.\a:C.\b:C. b;
+
+--(\b:Bool.b) :função identidade para observar o tipo de um termo
+
+--if:\b\e1\e2 -> b é bool, tipo e1 = e2 qualquer
+if = \\D. \b:Bool. \e1:D. \e2:D. (b[D]) e1 e2;
+
+--EXERCÍCIO: and, not e or
+--and simples: \e1 \e1. e1 e2 false
+--para usar true/false como seletor, é necessário passar o tipo por aplicação!
+and = \e1:Bool. \e2:Bool. e1[Bool] e2 false;
+or = \e1:Bool. \e2:Bool. e1[Bool] true e2;
+not = \e1:Bool. e1[Bool] false true;
+
+--NATURAIS
+succ = \n:Nat. \\C.\f:C->C.\x:C. f(n[C] f x);
+
+--EXERCÍCIO: add, mult, isZero
+--add \m n \f x. m f (n f x) -> simples
+--para usar número como iterador polimórfico, precisa instanciar o tipo!
+add1 = \n1:Nat. \n2:Nat.  \\C.\f:C->C. \x:C. n2[C] f (n1[C] f x);
+--Como estamos reconstruindo um natural, o tipo a ser passado ao iterador é C!
+
+--add \m n. m succ n
+add2 = \n1:Nat.\n2:Nat. n2[Nat] succ n1;
+
+--isZero (simples) = \n. n (\s. false) true ->simples
+isZero = \n:Nat. n[Bool] (\b:Bool. false) true;
+
+--mult = \n1 n2. \f x. n1 (n2 f) x
+mult1 = \n1:Nat. \n2:Nat. \\C.\f:C->C. \x:C.  n1[C] (n2[C] f) x;
+--mult = \n1 n2. n1 (\x. add n2 x) 0 ->simples
+mult2 = \n1:Nat. \n2:Nat. n1[Nat] (\x:Nat. add1 n2 x) 0;
+
+--iterando sobre naturais
+double = \n:Nat. n[Nat] (\n:Nat. succ (succ n)) 0;
+even = \n:Nat. n[Bool] not true;
+--Ordem de argumento: tipo de saída, passo, base
+--podemos assim converter recursão estrutural em chamada com iterador
+
+-- lista
+empty = \\C. \e:C. \c:Nat->C->C. e;
+cons = \n:Nat. \l:ListNat. \\C.\e:C. \c:(Nat->C->C). c n (l [C] e c);
+isEmpty = \l:ListNat. l [Bool] true (\n:Nat. \k:Bool. false);
+isCons = \l:ListNat. l [Bool] false (\n:Nat. \k:Bool. true);
+head = \l:ListNat. l [Nat] 0 (\n:Nat. \k:Nat. n);
+
+-- pares
+pairNatBool = \a:Nat. \b:Bool. (\\C. \f:A->B->C. f a b);
+fstNatBool = \p: NatxBool. (\a:Nat. \b: Bool. a);
+sndNatBool = \p: NatxBool. (\a:Nat. \b: Bool. b);
+
+
+in 
+fstNatBool pairNatBool 2 false

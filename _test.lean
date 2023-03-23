@@ -1,5 +1,5 @@
 variables p q r : Prop
-
+-- k)
 variable z : (p ∧ q) ∨ (p ∧ r)
 
 #check ((or.elim z) (assume x : p ∧ q, and.left x) (assume y : p ∧ r, and.left y))

@@ -1,0 +1,44 @@
+typedef
+  False = forall C:*, C;
+  True  = forall C:*, C -> C;
+  Not   = \A:*, A -> False;
+  And   = \A:*, \B:*, forall C:*, (A -> B -> C) -> C;
+  Or    = \A:*, \B:*, forall C:*, (A -> C) -> (B -> C) -> C;
+end
+
+
+var 
+  A:*;
+  B:*;
+  C:*;
+  D:*;
+  h0:A -> (And B C);
+  x:(Or A B) -> (Or C D);
+  y:A;
+  h2:And (Or A B) C;
+  h3:B -> A;
+end
+
+
+let
+
+  true = \\C:*. \a:C. \b:C. a;
+  false = \\C:*. \a:C. \b:C. b;
+  single        = \\C:*. \c:C. c;                        
+  elimBot       = \\A:*. \f:False. f [A];               
+
+  pair          = \\A:*. \\B:*. \a:A. \b:B. \\C:*. \f:A->B->C. f a b;
+  fst           = \\A:*. \\B:*. \p:And A B. p [A] (\a:A.\b:B.a) ;
+  snd           = \\A:*. \\B:*. \p:And A B. p [B] (\a:A.\b:B.b) ;
+
+  left          = \\A:*. \\B:*. \a:A. \\C:*. \f:A->C. \g:B->C. f a;
+  right         = \\A:*. \\B:*. \b:B. \\C:*. \f:A->C. \g:B->C. g b;
+  case          = \\A:*. \\B:*. \\D:*. \u:Or A B. \f:A->D. \g:B->D. u [D] f g;
+
+-- 1) A -> B ^ C portanto (A -> B) ^ (A -> C)
+-- l1 = And (\x:A. And B C. fst [B] [C] (x y))
+  i1 = \a:And (A -> B) (A -> C).a;
+  l1 = pair [A->B] [A->C] (\y:A. fst [B] [C] (h0 y)) (\y:A. snd [B] [C] (h0 y)); -- certo
+  l2 = snd [C] [D] (x (left [A] [B] y));
+in
+  pair [A] [C] (case [fst [Or A B] [C] h2] y (y h3)) (snd [Or A B] [C] h2)

@@ -8,4 +8,4 @@ variable z : p ∧ r
 
 #check (and.intro
        (or.elim (x) (assume y, and.left y) (assume z, and.left z))
-       (or.elim (x) (assume y, (or.intro_left (and.right y))) (assume z, (or.intro_right (and.left z)))))
+       (or.elim (x) (assume y, (or.intro_left r (and.right y))) (assume z, (or.intro_right q (and.right z)))))
