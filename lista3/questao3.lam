@@ -11,9 +11,8 @@ var
   A:*;
   B:*;
   C:*;
-  D:*;
-  x:(Or A B) -> (And C D);
-  y:A;
+  x:And (Or A B) C;
+  y:B -> A;
 end
 
 
@@ -31,5 +30,10 @@ let
   left          = \\A:*. \\B:*. \a:A. \\C:*. \f:A->C. \g:B->C. f a;
   right         = \\A:*. \\B:*. \b:B. \\C:*. \f:A->C. \g:B->C. g b;
   case          = \\A:*. \\B:*. \\D:*. \u:Or A B. \f:A->D. \g:B->D. u [D] f g;
+
+-- 3) (A v B) ^ C, B portanto A ^ C
+  i3 = \a:(And A C).a;
+  l3 = pair [A] [C] (case [A] [B] [A] (fst [Or A B] [C] x)(\w:A. w) (\z:B. y z)) 
+  (snd [Or A B] [C] x)
 in
-  single
+  i3 l3

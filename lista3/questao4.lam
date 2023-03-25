@@ -11,19 +11,14 @@ var
   A:*;
   B:*;
   C:*;
-  D:*;
-  x:(Or A B) -> (And C D);
-  y:A;
 end
 
 
 let
-
   true = \\C:*. \a:C. \b:C. a;
   false = \\C:*. \a:C. \b:C. b;
   single        = \\C:*. \c:C. c;                        
   elimBot       = \\A:*. \f:False. f [A];               
-
   pair          = \\A:*. \\B:*. \a:A. \b:B. \\C:*. \f:A->B->C. f a b;
   fst           = \\A:*. \\B:*. \p:And A B. p [A] (\a:A.\b:B.a) ;
   snd           = \\A:*. \\B:*. \p:And A B. p [B] (\a:A.\b:B.b) ;
@@ -31,5 +26,10 @@ let
   left          = \\A:*. \\B:*. \a:A. \\C:*. \f:A->C. \g:B->C. f a;
   right         = \\A:*. \\B:*. \b:B. \\C:*. \f:A->C. \g:B->C. g b;
   case          = \\A:*. \\B:*. \\D:*. \u:Or A B. \f:A->D. \g:B->D. u [D] f g;
+
+-- 4) portanto A -> B -> (¬B -> ¬A)
+-- equivalente a A -> B -> (B -> False -> A -> False)
+  i4 = \a:(A->B)->(B->False)->A->False.a;
+  l4 = \x:A->B. \y:B->False. \z:A. y (x z);
 in
-  single
+  l4

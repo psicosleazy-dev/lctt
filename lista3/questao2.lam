@@ -31,5 +31,9 @@ let
   left          = \\A:*. \\B:*. \a:A. \\C:*. \f:A->C. \g:B->C. f a;
   right         = \\A:*. \\B:*. \b:B. \\C:*. \f:A->C. \g:B->C. g b;
   case          = \\A:*. \\B:*. \\D:*. \u:Or A B. \f:A->D. \g:B->D. u [D] f g;
+
+-- 2) A v B -> C ^ D, A portanto D v B
+  i2 = \a:(Or D B).a;
+  l2 = left [D] [B] (snd [C] [D] (x (left [A] [B] y)));
 in
-  single
+  l2
