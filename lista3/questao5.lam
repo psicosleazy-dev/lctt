@@ -13,7 +13,6 @@ var
   lem: (forall U:*, Or U (U->False));
   x: (And A B) -> False;
   y: A;
-  z: B;
 end
 
 
@@ -35,16 +34,8 @@ let
 -- 5) ¬ (A ^ B) portanto ¬A v ¬B
 -- equivalente a (A ^ B) -> False portanto A -> False v B -> False
  i5 = \a:Or (A -> False) (B -> False).a;
- l5 = left [A->False] [B->False]
-   (case [B] [B->False] [B->False] (lem [B])
-     (\z:B. case [A] [A->False] [False] (lem [A])
-     (\y:A. x pair [A] [B] (y) (z))
-     (\w:A->False. w y))
-     (\a:B->False. a));
- bc = (\z:B. case [A] [A->False] [False] (lem [A])
-     (\y:A. x pair [A] [B] (y) (z))
-     (\w:A->False. w y));
+ l5 = left [A->False] [B->False] (case [B] [B->False] [B->False] (lem [B]) (\z:B. case [A] [A->False] [False] (lem [A]) (\y:A. x pair [A] [B] (y) (z)) (\w:A->False. w y)) (\a:B->False. a));
 
 in
- bc
+ l5
   
